@@ -91,7 +91,7 @@ sealed interface ScreenRoute {
 5. Friend taps `Accept` $\to$ Backend establishes two-way friendship and generates deterministic `dmKey`.
 6. User taps friend's profile $\to$ taps `Start Chat` $\to$ navigates directly to `ChatRoomScreen(roomId)`.
 
-### Journey 3: The Ephemeral Chat Life Cycle (Message to Vapor)
+### Journey 3: The Disappearing Chat Life Cycle (Message to Vapor)
 1. **Composer Focus:** Sender taps text box in `ChatRoomScreen`.
 2. **Typing Event:** As sender types, `ws:typing` event is emitted. Recipient sees subtle glowing animated dots: *"Alice is typing..."*.
 3. **Send Message:** Sender hits Send.

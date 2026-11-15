@@ -6,7 +6,7 @@ coverage/
 .env.local
 .env.*.local
 
-# Ephemeral uploads must never be committed or backed up
+# Uploads must never be committed or backed up
 uploads/*
 !uploads/.gitkeep
 uploads-test/

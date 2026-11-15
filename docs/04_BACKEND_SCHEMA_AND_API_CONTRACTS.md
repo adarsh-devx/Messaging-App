@@ -191,7 +191,7 @@ Authentication: `Authorization: Bearer <ACCESS_TOKEN>` header required for all r
 
 ---
 
-### 2.4 Messages & Ephemeral Media (`/api/rooms/:roomId/messages`)
+### 2.4 Messages & Media (`/api/rooms/:roomId/messages`)
 
 #### `GET /api/rooms/:roomId/messages?cursor=uuid&limit=30`
 * Returns paginated list of non-expired messages.

@@ -9,7 +9,7 @@ describe('link helpers', () => {
 
   it('accepts only upload identifiers, never client-supplied file paths', () => {
     expect(parseUploadUrl(`/api/uploads/${UPLOAD_ID}`)).toBe(UPLOAD_ID);
-    expect(parseUploadUrl(`https://api.blink.app/api/uploads/${UPLOAD_ID}`)).toBe(UPLOAD_ID);
+    expect(parseUploadUrl(`https://api.floww.app/api/uploads/${UPLOAD_ID}`)).toBe(UPLOAD_ID);
     expect(parseUploadUrl('/api/uploads/../../etc/passwd')).toBeNull();
     expect(parseUploadUrl('/api/uploads/not-a-uuid')).toBeNull();
     expect(parseUploadUrl('https://evil.example.com/api/uploads/' + UPLOAD_ID)).toBe(UPLOAD_ID);

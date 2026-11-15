@@ -24,7 +24,7 @@ Messages have flexible self-destruct timers (30s, 5m, 1h, 24h, or Off), the coun
 | Logging | Winston (metadata only) |
 | Tests | Jest + Supertest |
 
-The backend lives in `BLINK/backend` and is independent from `BLINK/frontend`.
+The backend lives in `Floww/backend` and is independent from `Floww/frontend`.
 
 ---
 
@@ -53,7 +53,7 @@ npm run db:seed             # optional demo data
 npm run dev                 # http://localhost:5000
 ```
 
-Seed credentials (development only): users `pkdev`, `aryan`, `maya`, password `BlinkDev123!`.
+Seed credentials (development only): users `pkdev`, `aryan`, `maya`, password `FlowwDev123!`.
 
 > **Windows note:** if your shell exports `PORT=0`, start with `PORT=5000 npm run dev` (dotenv does not override existing environment variables).
 
@@ -84,7 +84,7 @@ The API applies `prisma migrate deploy` on start. PostgreSQL is exposed on `5432
 | `JWT_ACCESS_EXPIRY` | no | `15m` | |
 | `JWT_REFRESH_EXPIRY` | no | `7d` | |
 | `BCRYPT_ROUNDS` | no | `12` | Allowed 10–15 |
-| `UPLOAD_DIR` | no | `./uploads` | Ephemeral local storage |
+| `UPLOAD_DIR` | no | `./uploads` | Local storage |
 | `MAX_FILE_SIZE_BYTES` | no | `2097152` | 2 MB |
 | `MESSAGE_CLEANUP_INTERVAL_MS` | no | `30000` | Sweeper interval |
 | `LOG_LEVEL` | no | `info` | |
@@ -349,10 +349,10 @@ Integration suites need a disposable PostgreSQL database:
 
 ```bash
 RUN_INTEGRATION_TESTS=true \
-DATABASE_URL=postgresql://blink_user:blink_pass@localhost:5432/blink_test \
+DATABASE_URL=postgresql://floww_user:floww_pass@localhost:5432/floww_test \
 npx prisma migrate deploy
 RUN_INTEGRATION_TESTS=true \
-DATABASE_URL=postgresql://blink_user:blink_pass@localhost:5432/blink_test \
+DATABASE_URL=postgresql://floww_user:floww_pass@localhost:5432/floww_test \
 npm run test:integration
 ```
 
@@ -381,6 +381,6 @@ Unit tests cover the expiration math (including the ceiling), password hashing, 
 - **Single Socket.IO instance.** A Redis adapter is not wired; run one API instance or add `@socket.io/redis-adapter` before horizontal scaling.
 - **Redis is optional.** Without it, rate limits are per-process only.
 - **Group avatars** accept an optional external HTTPS URL, while user avatars are uploaded or generated locally.
-- **No push notifications or email verification** — out of scope for the ephemeral core.
+- **No push notifications or email verification** — out of scope.
 - The initial migration (`0001_init`) was generated with `prisma migrate diff` and then applied by `prisma migrate deploy` against a UTF-8 PostgreSQL cluster during verification; keep using `prisma migrate dev` for future schema changes.
 - `package.json#prisma` seed config is used (Prisma 6); Prisma 7 requires `prisma.config.ts`.

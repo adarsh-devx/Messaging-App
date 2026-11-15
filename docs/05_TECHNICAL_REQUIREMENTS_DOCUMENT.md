@@ -158,4 +158,4 @@ Acquires new Access Token & retries original request transparently
 2. **KeyStore Token Storage:**
    * Master key generated via `MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)` inside Android hardware Trusted Execution Environment (TEE).
 3. **RAM Sanitation:**
-   * Sensitive decrypted messages are held in ephemeral memory models; when Room clears or app is killed, garbage collector reclaims buffers immediately.
+   * Sensitive decrypted messages are held in in-memory models; when Room clears or app is killed, garbage collector reclaims buffers immediately.

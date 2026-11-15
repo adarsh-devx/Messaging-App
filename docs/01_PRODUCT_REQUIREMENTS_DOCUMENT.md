@@ -14,7 +14,7 @@
 Unlike traditional messengers that store permanent ledgers of your conversations, Floww treats digital communication like real-world spoken conversations: once heard and understood, words dissolve.
 
 ### Core Value Pillars
-1. **True Ephemerality & Flexible Lifecycles:**
+1. **True Disappearing Messaging & Flexible Lifecycles:**
    * Messages self-destruct upon reading after a customizable countdown timer: **30 seconds, 5 minutes, 1 hour, 24 hours, or Off (Permanent Chat)**.
    * Hard database deletion — no soft deletes, no audit logs of chat text, no lingering files on disk.
 2. **Apple Liquid Glass (Frosted VisionOS Aesthetic):**
@@ -33,7 +33,7 @@ Unlike traditional messengers that store permanent ledgers of your conversations
 
 ---
 
-## 3. Ephemeral Messaging Lifecycle & Business Rules
+## 3. Disappearing Messaging Lifecycle & Business Rules
 
 ### 3.1 The Signal-Grade "Read-Triggered" Timer Rule
 A message's timer **does NOT start when sent**; it starts strictly when the recipient **first reads the message**:
@@ -55,7 +55,7 @@ A message's timer **does NOT start when sent**; it starts strictly when the reci
 * The ring subtly drains clockwise without causing visual noise or battery drain. Tapping the bubble reveals a frosted tooltip with the exact remaining time.
 
 ### 3.2 Media & Attachment Policy
-* Photos uploaded are strictly ephemeral.
+* Photos uploaded are strictly deleted when the message expires.
 * Files are processed via Sharp image pipeline on backend (optimized WebP/JPEG, EXIF/metadata completely stripped).
 * Stored with randomly generated nonces; when message expires, disk storage is instantly unlinked.
 
@@ -94,7 +94,7 @@ A message's timer **does NOT start when sent**; it starts strictly when the reci
 
 ### 4.5 Chat & Real-Time Messaging
 * **FR-CHAT-1:** Send instant text messages over WebSocket with REST HTTP fallback.
-* **FR-CHAT-2:** Send ephemeral camera/gallery photo attachments.
+* **FR-CHAT-2:** Send camera/gallery photo attachments.
 * **FR-CHAT-3:** Real-time typing indicators (`"Alice is typing..."`) with 3-second debounce timeout.
 * **FR-CHAT-4:** Real-time read receipts with millisecond timestamp sync.
 * **FR-CHAT-5:** Ultra-compact 10dp hairline circular draining ring beside timestamp (no loud digital numbers).

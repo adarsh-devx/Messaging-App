@@ -26,7 +26,7 @@ describeIfDatabase('auth (integration)', () => {
 
     const login = await request(app)
       .post('/api/auth/login')
-      .send({ username: 'pkdev', password: 'BlinkPass123!' })
+      .send({ username: 'pkdev', password: 'FlowwPass123!' })
       .expect(200);
 
     const oldRefresh = login.body.data.refreshToken as string;
@@ -49,7 +49,7 @@ describeIfDatabase('auth (integration)', () => {
 
     await request(app)
       .post('/api/auth/register')
-      .send({ username: 'aryan', displayName: 'Someone else', password: 'BlinkPass123!' })
+      .send({ username: 'aryan', displayName: 'Someone else', password: 'FlowwPass123!' })
       .expect(409);
 
     await request(app)

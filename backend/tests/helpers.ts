@@ -38,7 +38,7 @@ export async function registerUser(
   app: Express,
   username: string,
   displayName = username,
-  password = 'BlinkPass123!',
+  password = 'FlowwPass123!',
 ): Promise<TestSession> {
   const response = await request(app)
     .post('/api/auth/register')

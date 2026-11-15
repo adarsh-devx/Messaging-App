@@ -105,7 +105,7 @@ Frontend/
 
 ---
 
-### Phase 5: The Ephemeral Chat Experience & Real-Time Engine
+### Phase 5: The Disappearing Chat Experience & Real-Time Engine
 * **Deliverables:**
   * Implement `SocketManager.kt` handling Socket.io events (`ws:send_message`, `ws:new_message`, `ws:mark_read`, `ws:typing`).
   * Implement **ChatRoomScreen** with:

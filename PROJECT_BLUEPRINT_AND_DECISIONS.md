@@ -9,7 +9,7 @@
 ## 1. Product Vision & Philosophy
 
 * **Founder Mindset:** We are building this application **for ourselves first**. If we are genuinely satisfied with every animation, transition, privacy promise, and micro-interaction, users will fall in love with it too.
-* **Core Value Proposition:** Real-time, ultra-fast, ephemeral (self-destructing) messaging with zero digital footprints, wrapped in an **Apple Liquid Glass (Frosted VisionOS)** visual aesthetic and **Signal-grade cryptographic & architectural discipline**.
+* **Core Value Proposition:** Real-time, ultra-fast, disappearing (self-destructing) messaging with zero digital footprints, wrapped in an **Apple Liquid Glass (Frosted VisionOS)** visual aesthetic and **Signal-grade cryptographic & architectural discipline**.
 
 ---
 
@@ -43,7 +43,7 @@ Following the exact industry model of **Signal**, **Telegram**, and **Discord**:
 
 ## 3. Backend Inventory & Status (100% COMPLETE & VERIFIED)
 
-The backend in `d:\priyanshuApp\BLINK\backend` is completely built, structured, migrated, and seeded:
+The backend in `d:\Floww\backend` is completely built, structured, migrated, and seeded:
 
 ### A. Architectural Organization
 Modular Architecture (Vertical Slice) with strict separation of concerns:
@@ -60,7 +60,7 @@ backend/src/modules/<feature>/
 1. **Auth (`/api/auth`):** `register`, `login`, `refresh`, `logout`, `me` (Bcrypt 12 rounds + JWT Access/Refresh tokens).
 2. **Users (`/api/users`):** `me`, update profile/timer, avatar upload (Sharp image processor), user search (`/search?q=...`), public profile by ID.
 3. **Rooms (`/api/rooms`):** List user rooms, create private 1-on-1 room, create group room, get room detail, update self-destruct timer, member management (add/kick/leave).
-4. **Messages (`/api/rooms/:roomId/messages`):** List messages (paginated), send text message, ephemeral photo upload, mark read (First-Seen Starts Timer), delete early.
+4. **Messages (`/api/rooms/:roomId/messages`):** List messages (paginated), send text message, photo upload, mark read (First-Seen Starts Timer), delete early.
 5. **Friends (`/api/friends`):** List friends, pending requests, send request, accept/reject request, remove friend.
 6. **Invites (`/api/invites`):** Get personal invite link, accept invite code.
 7. **Notifications (`/api/notifications`):** List in-app notifications, mark read.
@@ -68,9 +68,9 @@ backend/src/modules/<feature>/
 9. **Automated Background Cleanup:** Cron engine (`expiration.job.ts`) deleting expired records from database and disk every 30 seconds.
 
 ### C. Database Connection
-* **Cloud Database:** Hosted on **Neon Serverless PostgreSQL** (`blink-db`).
+* **Cloud Database:** Hosted on **Neon Serverless PostgreSQL** (`floww-db`).
 * **Migrations:** Applied (`0001_init`).
-* **Seed Data:** Demo accounts created: `pkdev`, `aryan`, `maya` (Password: `BlinkDev123!`).
+* **Seed Data:** Demo accounts created: `pkdev`, `aryan`, `maya` (Password: `FlowwDev123!`).
 
 ---
 
@@ -156,7 +156,7 @@ We will directly leverage the battle-tested, hardware-accelerated Compose glass 
 When starting the new conversation, we execute the following steps in order:
 
 1. **Step 1: Android Studio Project Setup**
-   * Create new project / folder (e.g. `blink-android` or custom app name).
+   * Create new project / folder (e.g. `floww-android` or custom app name).
    * Configure Gradle Kotlin DSL (`build.gradle.kts`, `libs.versions.toml`).
    * Add dependencies: Jetpack Compose Material 3, Haze (`dev.chrisbanes.haze`), Retrofit, OkHttp, Socket.io-client, Coil, Coroutines.
 
@@ -165,12 +165,12 @@ When starting the new conversation, we execute the following steps in order:
 
 3. **Step 3: Setup Core MVI & Signal Typography**
    * Implement `EventDrivenViewModel.kt`.
-   * Bind Signal's exact typography scale and custom theme (`BlinkGlassTheme`).
+   * Bind Signal's exact typography scale and custom theme (`FlowwGlassTheme`).
 
 4. **Step 4: Network & State Integration with Live Backend**
    * Setup Retrofit API client pointing to our running Neon backend (`http://localhost:5000` / live host).
    * Implement Auth Flow (`Login`, `Register`, Token Persistence via EncryptedSharedPreferences).
 
-5. **Step 5: Chat UI & Real-Time Ephemeral Engine**
+5. **Step 5: Chat UI & Real-Time Disappearing Engine**
    * Floating glass chat bubble with live countdown timer.
    * WebSocket event listeners for instant message delivery & auto-eviction.
