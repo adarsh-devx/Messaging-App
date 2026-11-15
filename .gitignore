@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build artifacts
+dist/
+*/dist/
+build/
+*/build/
+.gradle/
+*/.gradle/
+
+# Environment and secrets (CRITICAL: never commit .env)
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs and coverage
+*.log
+coverage/
+*/coverage/
+
+# Uploads and temporary files
+uploads/*
+!uploads/.gitkeep
+*/uploads/*
+!*/uploads/.gitkeep
+uploads-test/
+*/uploads-test/
+.pgdata-verify/
+*/.pgdata-verify/
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+*.tsbuildinfo
