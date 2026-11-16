@@ -29,6 +29,13 @@ describeIfDatabase('auth (integration)', () => {
       .send({ username: 'pkdev', password: 'FlowwPass123!' })
       .expect(200);
 
+    // Verify login by email also succeeds:
+    const loginByEmail = await request(app)
+      .post('/api/auth/login')
+      .send({ email: 'pkdev@floww.me', password: 'FlowwPass123!' })
+      .expect(200);
+    expect(loginByEmail.body.data.user.id).toBe(registered.user.id);
+
     const oldRefresh = login.body.data.refreshToken as string;
     const refreshed = await request(app)
       .post('/api/auth/refresh')
@@ -49,7 +56,7 @@ describeIfDatabase('auth (integration)', () => {
 
     await request(app)
       .post('/api/auth/register')
-      .send({ username: 'aryan', displayName: 'Someone else', password: 'FlowwPass123!' })
+      .send({ username: 'aryan', email: 'aryan_diff@floww.me', displayName: 'Someone else', password: 'FlowwPass123!' })
       .expect(409);
 
     await request(app)

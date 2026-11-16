@@ -1,5 +1,8 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import path from 'node:path';
+
+// Always resolve .env relative to the Backend package root
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 import { z } from 'zod';
 
 /**

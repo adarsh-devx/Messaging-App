@@ -21,9 +21,17 @@ export const passwordSchema = z
     message: 'Password must be at most 72 bytes',
   });
 
+export const emailSchema = z
+  .string()
+  .trim()
+  .email('Invalid email address')
+  .max(255)
+  .toLowerCase();
+
 export const registerSchema = z
   .object({
     username: usernameSchema,
+    email: emailSchema,
     displayName: z.string().trim().min(1, 'Display name is required').max(MAX_DISPLAY_NAME_LENGTH * 2),
     password: passwordSchema,
   })
@@ -31,15 +39,27 @@ export const registerSchema = z
 
 export const loginSchema = z
   .object({
-    username: z
-      .string()
-      .trim()
-      .min(1)
-      .max(MAX_USERNAME_LENGTH + 1)
-      .transform((value) => value.replace(/^@/, '').toLowerCase()),
+    username: z.string().trim().min(1).max(255).optional(),
+    email: z.string().trim().email().max(255).optional(),
+    identifier: z.string().trim().min(1).max(255).optional(),
     password: z.string().min(1).max(128),
   })
-  .strict();
+  .strict()
+  .refine((data) => data.username || data.email || data.identifier, {
+    message: 'Username or email is required',
+    path: ['username'],
+  })
+  .transform((data) => {
+    const cleanId = (data.identifier || data.username || data.email || '')
+      .trim()
+      .replace(/^@/, '')
+      .toLowerCase();
+    return {
+      username: cleanId,
+      identifier: cleanId,
+      password: data.password,
+    };
+  });
 
 export const refreshTokenSchema = z
   .object({

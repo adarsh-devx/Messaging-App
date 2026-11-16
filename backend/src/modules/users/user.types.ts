@@ -21,11 +21,13 @@ export interface PublicUserDto {
 }
 
 export interface UserProfileDto extends PublicUserDto {
+  email?: string | null;
   defaultTimerMinutes?: number;
   inviteLink?: string;
 }
 
 type ProfileSource = PublicUserRow & {
+  email?: string | null;
   defaultTimerMinutes: number;
   inviteCode: string;
 };
@@ -43,6 +45,7 @@ export function toPublicUser(user: PublicUserRow): PublicUserDto {
 export function toUserProfile(user: ProfileSource, options: { includePrivate?: boolean } = {}): UserProfileDto {
   const profile: UserProfileDto = toPublicUser(user);
   if (options.includePrivate) {
+    profile.email = user.email ?? null;
     profile.defaultTimerMinutes = user.defaultTimerMinutes;
     profile.inviteLink = buildInviteLink(user.inviteCode);
   }

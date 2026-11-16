@@ -62,3 +62,6 @@ export const SOCKET_LIMITS = {
 export function isTimerOption(value: number): value is TimerOptionMinutes {
   return (TIMER_OPTIONS as readonly number[]).includes(value);
 }
+
+export const MAX_MESSAGE_LIFETIME_MS = 24 * 60 * 60 * 1000;
+

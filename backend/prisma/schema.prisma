@@ -40,6 +40,7 @@ enum NotificationType {
 
 model User {
   id                  String   @id @default(uuid())
+  email               String?  @unique
   username            String   @unique // stored bare, e.g. "pkdev"; API exposes "@pkdev"
   displayName         String
   bio                 String   @default("")

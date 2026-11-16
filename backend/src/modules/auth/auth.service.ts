@@ -12,6 +12,7 @@ import type { LoginInput, RegisterInput } from './auth.validator';
 
 const sessionUserSelect = {
   id: true,
+  email: true,
   username: true,
   displayName: true,
   bio: true,
@@ -75,6 +76,7 @@ export async function register(input: RegisterInput): Promise<AuthSessionDto> {
     user = await prisma.user.create({
       data: {
         username: input.username,
+        email: input.email,
         displayName,
         passwordHash,
         inviteCode,
@@ -88,6 +90,11 @@ export async function register(input: RegisterInput): Promise<AuthSessionDto> {
       'code' in error &&
       (error as { code?: string }).code === 'P2002'
     ) {
+      const meta = (error as { meta?: { target?: string[] | string } }).meta;
+      const targetStr = JSON.stringify(meta?.target || '');
+      if (targetStr.includes('email')) {
+        throw ApiError.conflict('An account with this email already exists', 'EMAIL_TAKEN');
+      }
       throw ApiError.conflict('That username is already taken', 'USERNAME_TAKEN');
     }
     throw error;
@@ -97,8 +104,15 @@ export async function register(input: RegisterInput): Promise<AuthSessionDto> {
 }
 
 export async function login(input: LoginInput): Promise<AuthSessionDto> {
-  const user = await prisma.user.findUnique({
-    where: { username: input.username },
+  const identifier = input.identifier || input.username;
+
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { username: identifier },
+        { email: identifier },
+      ],
+    },
     select: { ...sessionUserSelect, passwordHash: true },
   });
 

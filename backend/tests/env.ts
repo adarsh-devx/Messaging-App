@@ -1,3 +1,8 @@
+import dotenv from 'dotenv';
+import path from 'node:path';
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 process.env.NODE_ENV = 'test';
 // Some hosts export PORT=0; the app requires an explicit valid port.
 process.env.PORT = '5000';

@@ -39,10 +39,11 @@ export async function registerUser(
   username: string,
   displayName = username,
   password = 'FlowwPass123!',
+  email = `${username.replace(/^@/, '')}@floww.me`,
 ): Promise<TestSession> {
   const response = await request(app)
     .post('/api/auth/register')
-    .send({ username, displayName, password })
+    .send({ username, email, displayName, password })
     .expect(201);
 
   return response.body.data as TestSession;
