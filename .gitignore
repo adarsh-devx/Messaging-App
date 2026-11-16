@@ -9,6 +9,11 @@ build/
 */build/
 .gradle/
 */.gradle/
+.cxx/
+*/.cxx/
+local.properties
+*.apk
+*.aab
 
 # Environment and secrets (CRITICAL: never commit .env)
 .env
