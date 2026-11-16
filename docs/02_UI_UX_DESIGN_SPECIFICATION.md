@@ -160,3 +160,36 @@ We have analyzed and mapped 4 leading showcases from `liquidglassdesign.com` dir
   * **`ChatRoomTopBar` & `RoomListHeader`:** Minimalist header holding the friend's avatar, status dot (Electric Cyan for online), room name, and the self-destruct timer selector pill (`⏱ 15m`).
   * As the message list scrolls under the top bar, it blurs seamlessly via `GlassPool` without muddying the white title text.
 
+---
+
+## 8. Premium Iconography System (Phosphor / SF-Style Optical Precision)
+
+To prevent the generic, blocky look of legacy Android Material icons, Floww adopts an **Apple SF Symbols / Phosphor precision icon system**:
+
+### 8.1 Optical Rules & Calibration
+* **Corner Terminals:** Round cap and round join (`StrokeCap.Round`, `StrokeJoin.Round`) to harmonize with our G2 squircle glass containers.
+* **Stroke Calibration:**
+  * Regular weight: `1.5dp` stroke (matches our `1.2dp` hairline glass specular rim).
+  * Bold / Active weight: `2.0dp` stroke with subtle neon glow on active state.
+* **Dual-State Mechanics (Bottom Tab Bar):**
+  * Unselected: Crisp 1.5dp outline (`Color.White.copy(alpha = 0.50f)`).
+  * Selected: Solid frosted fill + Neon Purple/Cyan accent glow with spring scale pop ($0.85 \to 1.05 \to 1.0$).
+
+### 8.2 Floww Core Icon Matrix
+
+| Context | Icon Concept | Normal State | Active / Filled State |
+|---|---|---|---|
+| **Chats Tab** | `ChatCircleText` | 1.5dp Outline | Frosted Glow Fill |
+| **Friends Tab** | `UsersThree` | 1.5dp Outline | Frosted Glow Fill |
+| **Settings Tab** | `GearSix` | 1.5dp Outline | Frosted Glow Fill |
+| **Search** | `MagnifyingGlass` | 1.5dp Outline | - |
+| **New Chat (FAB)** | `Plus` | 2.0dp Bold | Spring Rotate 45° on open |
+| **Send Action** | `ArrowUp` / `PaperPlaneTilt` | Recessed Gray | Glowing Purple Circle |
+| **Attachment** | `Paperclip` / `Image` | 1.5dp Outline | - |
+| **Timer / Expiry** | `Timer` / `HourglassSimple` | Electric Cyan Accent | Pulsing Crimson (<10s) |
+| **Read Receipts** | `Checks` (Double Tick) | Gray Single Tick (Sent) | Electric Cyan Double Tick |
+| **Vanish Now** | `Sparkle` / `TrashSimple` | Soft Crimson Warning | - |
+| **Security Shield** | `ShieldCheck` | 1.5dp Outline | Electric Cyan Fill |
+| **QR Code** | `QrCode` | 1.5dp Outline | - |
+
+
