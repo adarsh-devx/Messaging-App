@@ -27,6 +27,18 @@ object FlowwColors {
     val AuroraSoftMint = Color(0xFF9EF0D0)
     val AuroraWarmSunset = Color(0xFFFFD4A9)
 
+    // Daylight Living Aura Colors (1:1 Reference Match)
+    val DaylightSkyBlue = Color(0xFFA5CBEB)
+    val DaylightLavender = Color(0xFFB8BBE9)
+    val DaylightSunsetPink = Color(0xFFF6A5C0)
+    val DaylightRose = Color(0xFFF472B6)
+    val DaylightMist = Color(0xFF9FC5E8)
+
+    // Glass Light Surfaces (Daylight aesthetic)
+    val GlassWhiteCard = Color(0xFFFFFFFF).copy(alpha = 0.75f)
+    val GlassTranslucentTile = Color(0xFFFFFFFF).copy(alpha = 0.45f)
+    val GlassPillDock = Color(0xFF3A4D62).copy(alpha = 0.78f)
+
     // Brand Neon Accents
     val FlowwIris = Color(0xFF8B5CF6)
     val FlowwIrisBright = Color(0xFFA78BFA)

@@ -1,18 +1,18 @@
 package dev.floww.android.features.welcome
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,478 +22,380 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.floww.android.core.glass.FloatingGlassCapsule
-import dev.floww.android.core.glass.GlassBadge
-import dev.floww.android.core.glass.GlassButton
-import dev.floww.android.core.glass.GlassButtonVariant
-import dev.floww.android.core.glass.GlassCard
-import dev.floww.android.core.glass.GlassIconButton
-import dev.floww.android.core.glass.GlassSegmentedPill
 import dev.floww.android.core.glass.LivingAuraBackground
-import dev.floww.android.core.glass.glassBorder
-import dev.floww.android.core.theme.FlowwColors
-import dev.floww.android.core.theme.FlowwShapes
-import kotlin.math.cos
-import kotlin.math.sin
+
+// Clean Luxury Sky Blue Palette
+private val ColorSkyBlue = Color(0xFF0284C7)
+private val ColorForestBlack = Color(0xFF031916)
+private val ColorSubtitle = Color(0xFF2E3530)
+private val ColorDisclaimer = Color(0xFF475569)
 
 @Composable
 fun WelcomeScreen(
-    viewModel: WelcomeScreenViewModel,
+    viewModel: WelcomeScreenViewModel? = null,
     onNavigateToAuth: (isRegister: Boolean) -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
-    val hazeState = remember { HazeState() }
+    LaunchedEffect(viewModel) {
+        viewModel?.actions?.collect { action ->
+            when (action) {
+                is WelcomeScreenActions.NavigateToAuth -> onNavigateToAuth(action.isRegister)
+                is WelcomeScreenActions.ShowInfoDialog -> { /* Dialog preview */ }
+            }
+        }
+    }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .haze(state = hazeState)
-    ) {
-        // 1. Ambient Breathing Living Aura Background
-        LivingAuraBackground(modifier = Modifier.fillMaxSize())
+    Box(modifier = Modifier.fillMaxSize()) {
+        // 1. Edge-to-Edge Living Daylight Aura Background
+        LivingAuraBackground(
+            isDark = false,
+            modifier = Modifier.fillMaxSize()
+        )
 
-        // 2. Foreground Content
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .padding(horizontal = 24.dp)
+                .statusBarsPadding(),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(modifier = Modifier.height(12.dp))
+            // 2. Clean Unboxed Brand Header (No pill capsule, pure floating typography)
+            TopBrandSection()
 
-            // Top Header: Minimal Starburst Brand Mark + Menu Icon
-            TopHeaderRow(
-                onMenuClick = { viewModel.onEvent(WelcomeScreenEvents.InfoClicked) }
-            )
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // Dynamic Editorial Headline with smooth animated transitions
-            AnimatedContent(
-                targetState = state.activeFeatureIndex,
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(400)) togetherWith
-                            fadeOut(animationSpec = tween(300))
-                },
-                label = "editorial_headline"
-            ) { index ->
-                val current = state.features[index]
-                Column {
-                    Text(
-                        text = current.title,
-                        style = MaterialTheme.typography.displayLarge.copy(
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            lineHeight = 44.sp,
-                            letterSpacing = (-1.0).sp
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = current.subtitle,
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            color = FlowwColors.TextSecondary,
-                            lineHeight = 22.sp
-                        )
-                    )
+            // 3. Main Center Content with Liquid Floating Avatar Wave & Spring Physics
+            MainContentSection(
+                onGetStartedClick = {
+                    if (viewModel != null) {
+                        viewModel.sendEvent(WelcomeScreenEvents.GetStartedClicked)
+                    } else {
+                        onNavigateToAuth(false)
+                    }
                 }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Segmented Glass Filter Pills
-            GlassSegmentedPill(
-                items = listOf("Disappearing", "Zero Trace", "Liquid Glass"),
-                selectedIndex = state.activeFeatureIndex,
-                onSelectIndex = { viewModel.onEvent(WelcomeScreenEvents.FeatureSelected(it)) },
-                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Bento-Style Glass Preview Card (Interactive Optical Glass Container)
-            val activeFeature = state.features[state.activeFeatureIndex]
-            GlassBentoPreviewCard(
-                feature = activeFeature,
-                hazeState = hazeState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Floating Bottom Action Capsule
-            BottomFloatingActionCapsule(
-                hazeState = hazeState,
-                onGetStarted = { onNavigateToAuth(true) },
-                onSignIn = { onNavigateToAuth(false) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .padding(bottom = 12.dp)
-            )
+            // 4. Minimalist Legal Disclaimer
+            MinimalistLegalDisclaimer()
         }
     }
 }
 
 /**
- * Top Navigation Row: Starburst Geometric Brand Mark + Glass Circle Action
+ * Clean Unboxed Brand Header (No Pill Container)
  */
 @Composable
-private fun TopHeaderRow(
-    onMenuClick: () -> Unit
-) {
+private fun TopBrandSection() {
+    val infiniteTransition = rememberInfiniteTransition(label = "star_spin")
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(20000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "star_rotate"
+    )
+
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 24.dp, top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            // Ethereal 12-Ray Starburst Brand Icon
-            StarburstBrandMark(modifier = Modifier.size(36.dp))
-
-            Text(
-                text = "Floww",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    letterSpacing = (-0.5).sp
-                )
-            )
-        }
-
-        // 4-Dot Frosted Circle Button
-        GlassIconButton(
-            onClick = onMenuClick,
-            size = 44.dp
-        ) {
-            Icon(
-                imageVector = Icons.Default.MoreHoriz,
-                contentDescription = "Options",
-                tint = Color.White.copy(alpha = 0.85f),
-                modifier = Modifier.size(20.dp)
-            )
-        }
+        Text(
+            text = "✦",
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold,
+            color = ColorSkyBlue,
+            modifier = Modifier.rotate(rotation)
+        )
+        Text(
+            text = "Floww",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = ColorForestBlack,
+            letterSpacing = (-0.3).sp
+        )
+        Text(
+            text = "•",
+            fontSize = 10.sp,
+            color = Color.Gray
+        )
+        Text(
+            text = "Disappearing Moments",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = ColorSubtitle
+        )
     }
 }
 
-/**
- * Procedural Starburst Brand Mark (Seen in user reference)
- */
 @Composable
-private fun StarburstBrandMark(modifier: Modifier = Modifier) {
-    val infiniteTransition = rememberInfiniteTransition(label = "starburst_subtle_glow")
-    val alphaGlow by infiniteTransition.animateFloat(
-        initialValue = 0.85f,
-        targetValue = 1.0f,
+private fun MainContentSection(onGetStartedClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 28.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Ultra-Crisp Balanced Vector Avatar Badges Arc with Liquid Floating Wave Motion
+        AvatarBadgesRow()
+
+        Spacer(modifier = Modifier.height(26.dp))
+
+        // Forward-Bent Italic Display Headline
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.graphicsLayer { rotationZ = -2.0f }
+        ) {
+            Text(
+                text = "Let's get you",
+                fontSize = 38.sp,
+                fontWeight = FontWeight.Black,
+                fontStyle = FontStyle.Italic,
+                color = ColorForestBlack,
+                letterSpacing = (-1.0).sp,
+                textAlign = TextAlign.Center,
+                lineHeight = 40.sp
+            )
+            Text(
+                text = "logged in.",
+                fontSize = 46.sp,
+                fontWeight = FontWeight.Black,
+                fontStyle = FontStyle.Italic,
+                color = ColorSkyBlue,
+                letterSpacing = (-1.0).sp,
+                textAlign = TextAlign.Center,
+                lineHeight = 48.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Semi-Bold Subtitle
+        Text(
+            text = "Start finding your favourites and earning exclusive discounts. It only takes a minute.",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = ColorSubtitle,
+            lineHeight = 19.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+
+        Spacer(modifier = Modifier.height(44.dp))
+
+        // Primary Action Button with Spring Touch & Kinetic Arrow Nudge
+        AnimatedGetStartedButton(onClick = onGetStartedClick)
+    }
+}
+
+@Composable
+private fun AnimatedGetStartedButton(onClick: () -> Unit) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.92f else 1f,
+        animationSpec = spring(dampingRatio = 0.65f, stiffness = 500f),
+        label = "btn_spring_press"
+    )
+
+    val infiniteTransition = rememberInfiniteTransition(label = "arrow_nudge")
+    val arrowOffset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 4f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1400, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "arrow_offset"
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .scale(scale)
+            .clip(CircleShape)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .padding(vertical = 10.dp, horizontal = 20.dp)
+    ) {
+        Text(
+            text = "Get Started",
+            fontSize = 17.sp,
+            fontWeight = FontWeight.Bold,
+            color = ColorSkyBlue
+        )
+        Spacer(modifier = Modifier.size(6.dp))
+        Text(
+            text = "→",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Black,
+            color = ColorSkyBlue,
+            modifier = Modifier.offset(x = arrowOffset.dp)
+        )
+    }
+}
+
+@Composable
+private fun AvatarBadgesRow() {
+    val infiniteTransition = rememberInfiniteTransition(label = "avatar_liquid_wave")
+
+    val wavePhase1 by infiniteTransition.animateFloat(
+        initialValue = -3f,
+        targetValue = 3f,
         animationSpec = infiniteRepeatable(
             animation = tween(2400, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "burst_alpha"
+        label = "wave_phase_1"
     )
 
-    Canvas(modifier = modifier) {
-        val center = Offset(size.width / 2f, size.height / 2f)
-        val outerRadius = size.width / 2f * 0.95f
-        val innerRadius = outerRadius * 0.45f
-        val rayCount = 12
-        val strokeWidth = 3.dp.toPx()
+    val wavePhase2 by infiniteTransition.animateFloat(
+        initialValue = 3f,
+        targetValue = -3f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2800, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "wave_phase_2"
+    )
 
-        for (i in 0 until rayCount) {
-            val angleRad = (i * (360f / rayCount) * (Math.PI / 180f)).toFloat()
-            val start = Offset(
-                x = center.x + innerRadius * cos(angleRad),
-                y = center.y + innerRadius * sin(angleRad)
-            )
-            val end = Offset(
-                x = center.x + outerRadius * cos(angleRad),
-                y = center.y + outerRadius * sin(angleRad)
-            )
-            drawLine(
-                color = Color.White.copy(alpha = alphaGlow),
-                start = start,
-                end = end,
-                strokeWidth = strokeWidth,
-                cap = StrokeCap.Round
-            )
-        }
-        drawCircle(
-            color = Color.White.copy(alpha = alphaGlow),
-            radius = innerRadius * 0.5f,
-            center = center
-        )
-    }
-}
-
-/**
- * Bento Glass Preview Card
- */
-@Composable
-private fun GlassBentoPreviewCard(
-    feature: WelcomeFeature,
-    hazeState: HazeState,
-    modifier: Modifier = Modifier
-) {
-    GlassCard(
-        hazeState = hazeState,
-        modifier = modifier,
-        shape = FlowwShapes.SquircleCard,
-        backgroundColor = Color.White.copy(alpha = 0.07f),
-        blurRadius = 26.dp
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            // Card Top Row with Badge & Status
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                GlassBadge(
-                    text = feature.badge,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Timer,
-                            contentDescription = null,
-                            tint = FlowwColors.FlowwCyan,
-                            modifier = Modifier.size(13.dp)
-                        )
-                    }
-                )
+        BadgeCircle(size = 48, icon = "🎁", color = Color(0xFF831843), dynamicOffset = wavePhase1, baseOffset = (-3))
+        BadgeCircle(size = 50, icon = "🛍️", color = Color(0xFFF43F5E), dynamicOffset = wavePhase2, baseOffset = 3, negativeMargin = (-12))
+        BadgeCircle(size = 52, icon = "💬", color = Color(0xFF38BDF8), dynamicOffset = wavePhase1, baseOffset = (-1), negativeMargin = (-12))
+        
+        BadgeCircle(
+            size = 60,
+            icon = "👨‍🍳",
+            color = Color(0xFFF43F5E),
+            dynamicOffset = wavePhase2 * 0.7f,
+            baseOffset = (-6),
+            negativeMargin = (-12),
+            isCenter = true
+        )
 
-                // Encrypted Lock Status
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = "Encrypted",
-                        tint = FlowwColors.TextMuted,
-                        modifier = Modifier.size(12.dp)
-                    )
-                    Text(
-                        text = "Encrypted",
-                        fontSize = 11.sp,
-                        color = FlowwColors.TextMuted,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
+        BadgeCircle(size = 52, icon = "🍹", color = Color(0xFFEAB308), dynamicOffset = wavePhase1, baseOffset = (-1), negativeMargin = (-12))
+        BadgeCircle(size = 50, icon = "🍔", color = Color(0xFF6366F1), dynamicOffset = wavePhase2, baseOffset = 3, negativeMargin = (-12))
+        BadgeCircle(size = 48, icon = "🍲", color = Color(0xFFDC2626), dynamicOffset = wavePhase1, baseOffset = (-3), negativeMargin = (-12))
+    }
+}
 
-            Spacer(modifier = Modifier.height(12.dp))
+@Composable
+private fun BadgeCircle(
+    size: Int,
+    icon: String,
+    color: Color,
+    dynamicOffset: Float = 0f,
+    baseOffset: Int = 0,
+    negativeMargin: Int = 0,
+    isCenter: Boolean = false
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
 
-            // Realistic Simulated Disappearing Bubble with Hairline Draining Ring
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(FlowwShapes.SquircleBento)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                FlowwColors.FlowwIris.copy(alpha = 0.22f),
-                                Color(0xFF1D1733).copy(alpha = 0.40f)
-                            )
-                        ),
-                        shape = FlowwShapes.SquircleBento
-                    )
-                    .glassBorder(
-                        width = 1.dp,
-                        shape = FlowwShapes.SquircleBento,
-                        startColor = Color.White.copy(alpha = 0.28f),
-                        endColor = Color.White.copy(alpha = 0.04f)
-                    )
-                    .padding(18.dp)
-            ) {
-                Column {
-                    Text(
-                        text = "Priyanshu",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = FlowwColors.FlowwIrisBright
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = feature.demoMessage,
-                        fontSize = 14.sp,
-                        color = Color.White,
-                        lineHeight = 20.sp
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
+    val tapScale by animateFloatAsState(
+        targetValue = if (isPressed) 1.25f else 1f,
+        animationSpec = spring(dampingRatio = 0.5f, stiffness = 400f),
+        label = "bubble_tap"
+    )
 
-                    // Timestamp + 10dp Hairline Circular Draining Ring
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "16:42",
-                            fontSize = 11.sp,
-                            color = FlowwColors.TextMuted
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
+    Box(
+        modifier = Modifier
+            .offset(x = negativeMargin.dp, y = (baseOffset + dynamicOffset).dp)
+            .size(size.dp)
+            .scale(tapScale)
+            .shadow(if (isCenter) 10.dp else 4.dp, CircleShape)
+            .clip(CircleShape)
+            .background(color)
+            .border(if (isCenter) 3.5.dp else 3.dp, Color.White, CircleShape)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = {}
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = icon,
+            fontSize = if (isCenter) 24.sp else 18.sp
+        )
+    }
+}
 
-                        // Hairline Circular Draining Ring
-                        HairlineDrainingRing(
-                            progress = 0.65f,
-                            modifier = Modifier.size(10.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "✓✓",
-                            fontSize = 10.sp,
-                            color = FlowwColors.FlowwCyan,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Feature Highlights Micro Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                GlassBadge(
-                    text = "No Cloud Storage",
-                    backgroundColor = Color.White.copy(alpha = 0.05f)
-                )
-                GlassBadge(
-                    text = "RAM-Only Buffer",
-                    backgroundColor = Color.White.copy(alpha = 0.05f)
-                )
-            }
+@Composable
+private fun MinimalistLegalDisclaimer() {
+    val disclaimerText = buildAnnotatedString {
+        append("By continuing you agree to our ")
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline, color = ColorSkyBlue)) {
+            append("T&Cs")
         }
+        append(". Please also check out our ")
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline, color = ColorSkyBlue)) {
+            append("Privacy Policy")
+        }
+        append(". We use your data to offer you a personalised experience. For more information ")
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline, color = ColorSkyBlue)) {
+            append("see here")
+        }
+        append(".")
     }
-}
 
-/**
- * 10dp Hairline Circular Draining Ring (1.2dp stroke)
- */
-@Composable
-private fun HairlineDrainingRing(
-    progress: Float,
-    modifier: Modifier = Modifier
-) {
-    Canvas(modifier = modifier) {
-        val strokeWidth = 1.2.dp.toPx()
-        // Background track ring
-        drawCircle(
-            color = Color.White.copy(alpha = 0.20f),
-            style = Stroke(width = strokeWidth)
-        )
-        // Foreground draining arc
-        drawArc(
-            color = FlowwColors.FlowwCyan,
-            startAngle = -90f,
-            sweepAngle = 360f * progress,
-            useCenter = false,
-            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-        )
-    }
-}
-
-/**
- * Floating Bottom Action Capsule
- */
-@Composable
-private fun BottomFloatingActionCapsule(
-    hazeState: HazeState,
-    onGetStarted: () -> Unit,
-    onSignIn: () -> Unit,
-    modifier: Modifier = Modifier
-) {
     Column(
-        modifier = modifier,
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 28.dp, vertical = 18.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Main Prominent Button
-        GlassButton(
-            onClick = onGetStarted,
-            variant = GlassButtonVariant.Prominent,
-            shape = FlowwShapes.SquirclePill,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "Get Started",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(18.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // Secondary Text Button
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
+        Text(
+            text = disclaimerText,
+            fontSize = 11.5.sp,
+            lineHeight = 16.sp,
+            color = ColorDisclaimer,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .clickable(onClick = onSignIn)
-                .padding(vertical = 4.dp, horizontal = 12.dp)
-        ) {
-            Text(
-                text = "Already have an account? ",
-                fontSize = 13.sp,
-                color = FlowwColors.TextSecondary
-            )
-            Text(
-                text = "Log in",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = FlowwColors.FlowwIrisBright
-            )
-        }
+                .size(width = 120.dp, height = 4.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF1E293B).copy(alpha = 0.35f))
+        )
     }
 }
