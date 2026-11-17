@@ -12,7 +12,7 @@ class WelcomeScreenViewModel(
                 setState { it.copy(activeFeatureIndex = event.index) }
             }
             is WelcomeScreenEvents.GetStartedClicked -> {
-                sendAction(WelcomeScreenActions.NavigateToAuth(isRegister = true))
+                sendAction(WelcomeScreenActions.NavigateToAuth(isRegister = false))
             }
             is WelcomeScreenEvents.SignInClicked -> {
                 sendAction(WelcomeScreenActions.NavigateToAuth(isRegister = false))
