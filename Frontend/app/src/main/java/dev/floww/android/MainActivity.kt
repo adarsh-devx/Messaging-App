@@ -20,6 +20,9 @@ import dev.floww.android.core.theme.FlowwTheme
 import dev.floww.android.features.auth.AuthScreen
 import dev.floww.android.features.auth.AuthScreenEvents
 import dev.floww.android.features.auth.AuthScreenViewModel
+import dev.floww.android.features.rooms.RoomsScreen
+import dev.floww.android.features.rooms.RoomsScreenEvents
+import dev.floww.android.features.rooms.RoomsScreenViewModel
 import dev.floww.android.features.welcome.WelcomeScreen
 import dev.floww.android.features.welcome.WelcomeScreenViewModel
 
@@ -33,6 +36,7 @@ class MainActivity : ComponentActivity() {
 
     private val welcomeViewModel: WelcomeScreenViewModel by viewModels()
     private val authViewModel: AuthScreenViewModel by viewModels()
+    private val roomsViewModel: RoomsScreenViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,12 +71,21 @@ class MainActivity : ComponentActivity() {
                                         currentDestination = FlowwDestination.Welcome
                                     },
                                     onNavigateToRooms = { userId, username ->
+                                        roomsViewModel.sendEvent(RoomsScreenEvents.Init(userId, username))
                                         currentDestination = FlowwDestination.Rooms(userId, username)
                                     }
                                 )
                             }
                             is FlowwDestination.Rooms -> {
-                                // Placeholder for Screen 3: RoomListScreen
+                                RoomsScreen(
+                                    viewModel = roomsViewModel,
+                                    onNavigateToChat = { roomId, roomName ->
+                                        // Future: Screen 4 ChatRoomScreen
+                                    },
+                                    onNavigateToSettings = {
+                                        // Future: Settings Screen
+                                    }
+                                )
                             }
                         }
                     }
